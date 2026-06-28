@@ -1,0 +1,17 @@
+{
+  "value": [
+    {
+      "subscriptionId": "8fb8a2cd-ec05-4c07-ba21-140237fb57d4",
+      "subscriptionExpirationDateTime": "2026-06-29T13:50:00.0000000Z",
+      "clientState": "YOUR_SECURE_CLIENT_STATE_STRING_HERE",
+      "changeType": "created",
+      "resource": "communications/onlineMeetings/getAllTranscripts('MSpkM2IzYjU0LWNhNDYtNGNkZi1iZjM4LWU1MGFhNGE2OWI0MCo0MCo3Mzc4NzA3MzQ5OTIyMDc2Njky')/transcripts('VjJfdHJhbnNjcmlwdF9pZF9zYW1wbGU=')",
+      "resourceData": {
+        "@odata.type": "#microsoft.graph.callTranscript",
+        "@odata.id": "communications/onlineMeetings/getAllTranscripts('MSpkM2IzYjU0LWNhNDYtNGNkZi1iZjM4LWU1MGFhNGE2OWI0MCo0MCo3Mzc4NzA3MzQ5OTIyMDc2Njky')/transcripts('VjJfdHJhbnNjcmlwdF9pZF9zYW1wbGU=')",
+        "id": "VjJfdHJhbnNjcmlwdF9pZF9zYW1wbGU="
+      },
+      "tenantId": "your-entra-tenant-id"
+    }
+  ]
+}
