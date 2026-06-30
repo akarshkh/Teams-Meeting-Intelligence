@@ -148,10 +148,11 @@ app.http('GraphWebhook', {
           logger.info(JSON.stringify(meetingDetails, null, 2));
           logger.info("================================");
           const meetingSubject = meetingDetails.subject || "Microsoft Teams Meeting";
-          const organizerName =
-            meetingDetails.participants?.organizer?.identity?.displayName ||
-            meetingDetails.participants?.organizer?.user?.displayName ||
-            "Unknown Organizer";
+       const organizerName =
+    meetingDetails.participants?.organizer?.identity?.displayName ||
+    meetingDetails.participants?.organizer?.user?.displayName ||
+    meetingDetails.participants?.organizer?.upn ||
+    "Unknown Organizer";
           const participants =
             meetingDetails.participants?.attendees
               ?.map((attendee) =>
