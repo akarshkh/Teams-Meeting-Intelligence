@@ -138,20 +138,48 @@ app.http('GraphWebhook', {
 
         try {
           // D. Fetch Meeting Details - Preserve Graph API calls
+          // Fetch meeting details from Microsoft Graph
           logger.info(`User ID: ${userId}`);
           logger.info(`Meeting ID: ${meetingId}`);
           logger.info(`Transcript ID: ${transcriptId}`);
           logger.info(`Fetching meeting details for ID: ${meetingId}`);
-          // Temporarily disabled for debugging:
-          // const meetingDetails = await graphService.getMeeting(userId, meetingId);
-          const meetingDetails = {
-            subject: 'Temporarily Disabled',
-            participants: { organizer: { user: { id: 'Unknown Organizer' } } }
-          };
-          const meetingSubject = meetingDetails.subject || 'Untitled Meeting';
-          
-          // Organizer user ID
-          const organizerId = meetingDetails.participants?.organizer?.user?.id || 'Unknown Organizer';
+          const meetingDetails = await graphService.getMeeting(userId, meetingId);
+          logger.info("===== GRAPH MEETING DETAILS =====");
+          logger.info(JSON.stringify(meetingDetails, null, 2));
+          logger.info("================================");
+          const meetingSubject = meetingDetails.subject || "Microsoft Teams Meeting";
+          const organizerName =
+            meetingDetails.participants?.organizer?.identity?.displayName ||
+            meetingDetails.participants?.organizer?.user?.displayName ||
+            "Unknown Organizer";
+          const participants =
+            meetingDetails.participants?.attendees
+              ?.map((attendee) =>
+                attendee.identity?.displayName ||
+                attendee.upn ||
+                attendee.identity?.user?.displayName
+              )
+              .filter(Boolean)
+              .join(", ") || "Not Available";
+          const participantCount = meetingDetails.participants?.attendees?.length || 0;
+          const meetingStartTime = meetingDetails.startDateTime || "";
+          const meetingEndTime = meetingDetails.endDateTime || "";
+          let meetingDuration = "Not Available";
+          if (meetingStartTime && meetingEndTime) {
+            const start = new Date(meetingStartTime);
+            const end = new Date(meetingEndTime);
+            const durationMinutes = Math.round((end.getTime() - start.getTime()) / 60000);
+            const hours = Math.floor(durationMinutes / 60);
+            const minutes = durationMinutes % 60;
+            meetingDuration = hours > 0 ? `${hours} hr ${minutes} min` : `${minutes} min`;
+          }
+
+          logger.info(`Organizer: ${organizerName}`);
+          logger.info(`Participants: ${participants}`);
+          logger.info(`Participant Count: ${participantCount}`);
+          logger.info(`Meeting Start: ${meetingStartTime}`);
+          logger.info(`Meeting End: ${meetingEndTime}`);
+          logger.info(`Meeting Duration: ${meetingDuration}`);
 
           // E. Fetch Transcript VTT Content - Preserve Graph API calls
           logger.info(`Fetching transcript content for ID: ${transcriptId}`);
@@ -171,7 +199,12 @@ app.http('GraphWebhook', {
               meetingId,
               transcriptId,
               meetingSubject,
-              organizerId,
+              organizerName,
+              participants,
+              participantCount,
+              meetingStartTime,
+              meetingEndTime,
+              meetingDuration,
               transcriptLength,
               transcriptContent: vttContent,
               processedAt: new Date().toISOString()
@@ -193,7 +226,7 @@ app.http('GraphWebhook', {
             meetingId,
             transcriptId,
             subject: meetingSubject,
-            organizer: organizerId,
+            organizer: organizerName,
             transcriptLength,
             processingTimeMs: duration
           });
