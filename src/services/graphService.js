@@ -138,23 +138,34 @@ class GraphService {
   /**
    * Retrieves online meeting metadata (to resolve Subject and Organizer/User ID).
    */
-  async getMeeting(userId, meetingId) {
-    logger.info(`Fetching meeting details for User ID: ${userId}, Meeting ID: ${meetingId}`);
-    return retry(async () => {
-      const headers = await this._getHeaders();
-      try {
-        const response = await axios.get(`${GRAPH_BASE_URL}/users/${userId}/onlineMeetings/${meetingId}`, { headers });
-        return response.data;
-      } catch (err) {
-        console.log('========== GRAPH GET MEETING ERROR ==========');
-        console.log('Status:', err.response?.status);
-        console.log('Headers:', JSON.stringify(err.response?.headers, null, 2));
-        console.log('Body:', JSON.stringify(err.response?.data, null, 2));
-        console.log('============================================');
-        throw err;
-      }
-    }, { operationName: 'Get Online Meeting Metadata' });
-  }
+ async getMeeting(userId, meetingId) {
+  logger.info(`Fetching meeting details for User ID: ${userId}, Meeting ID: ${meetingId}`);
+
+  return retry(async () => {
+    const headers = await this._getHeaders();
+
+    try {
+      const response = await axios.get(
+        `${GRAPH_BASE_URL}/users/${userId}/onlineMeetings/${meetingId}`,
+        { headers }
+      );
+
+      logger.info("========== ONLINE MEETING RESPONSE ==========");
+      logger.info(JSON.stringify(response.data, null, 2));
+      logger.info("=============================================");
+
+      return response.data;
+
+    } catch (err) {
+      console.log('========== GRAPH GET MEETING ERROR ==========');
+      console.log('Status:', err.response?.status);
+      console.log('Headers:', JSON.stringify(err.response?.headers, null, 2));
+      console.log('Body:', JSON.stringify(err.response?.data, null, 2));
+      console.log('============================================');
+      throw err;
+    }
+  }, { operationName: 'Get Online Meeting Metadata' });
+}
 
   /**
    * Downloads the raw WebVTT (.vtt) transcript content.
